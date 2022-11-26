@@ -68,6 +68,6 @@ void attribute_visible R_init_this_path_helper(DllInfo *dll)
     R_forceSymbols(dll, TRUE);
 
 
-    R_RegisterCCallable("this.path.helper", "set_R_Visible"            , (DL_FUNC) &set_R_Visible          );
+    R_RegisterCCallable("this.path.helper", "set_R_Visible"            , (DL_FUNC) &set_R_Visible            );
     R_RegisterCCallable("this.path.helper", "R_GetUnderlyingConnection", (DL_FUNC) &R_GetUnderlyingConnection);
 }
