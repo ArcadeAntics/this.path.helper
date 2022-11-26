@@ -1,0 +1,9 @@
+Package: this.path.helper
+Version: 0.1.0
+License: MIT + file LICENSE
+Title: Helper Package for 'this.path'
+Description: Helper Package for 'this.path'.
+Author: Andrew Simmons
+Maintainer: Andrew Simmons <akwsimmo@gmail.com>
+Depends: R (>= 3.3.0)
+Encoding: UTF-8
