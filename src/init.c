@@ -20,12 +20,10 @@
 #endif
 
 
-extern Rboolean R_Visible;
-
-
-void set_R_Visible(Rboolean visible)
+SEXP do_getconnection(SEXP call, SEXP op, SEXP args, SEXP rho)
 {
-    R_Visible = ((visible) ? (TRUE) : (FALSE));
+    Rconnection Rcon = R_GetConnection(CADR(args));
+    return R_MakeExternalPtr((void *) Rcon, R_NilValue, R_NilValue);
 }
 
 
@@ -34,17 +32,17 @@ typedef struct gzconn {
 } *Rgzconn;
 
 
-Rconnection R_GetUnderlyingConnection(SEXP file)
+SEXP do_getunderlyingconnection(SEXP call, SEXP op, SEXP args, SEXP rho)
 {
-    Rconnection Rcon = R_GetConnection(file);
+    Rconnection Rcon = R_GetConnection(CADR(args));
     if (Rcon->isGzcon) {
         /* copied from
 https://github.com/wch/r-source/blob/50ff41b742a1ac655314be5e25897a12d3096661/src/main/connections.c#L6018
          * this gives us access to the original connection that the gzcon was derived from
          */
-        return ((Rgzconn)(Rcon->private))->con;
+        Rcon = (((Rgzconn)(Rcon->private))->con);
     }
-    else return Rcon;
+    return R_MakeExternalPtr((void *) Rcon, R_NilValue, R_NilValue);
 }
 
 
@@ -52,11 +50,16 @@ https://github.com/wch/r-source/blob/50ff41b742a1ac655314be5e25897a12d3096661/sr
 
 
 static const R_CallMethodDef callRoutines[] = {
+
     {NULL, NULL, 0}
 };
 
 
 static const R_ExternalMethodDef externalRoutines[] = {
+
+    {"getconnection"          , (DL_FUNC) &do_getconnection          , 1},
+    {"getunderlyingconnection", (DL_FUNC) &do_getunderlyingconnection, 1},
+
     {NULL, NULL, 0}
 };
 
@@ -66,8 +69,4 @@ void attribute_visible R_init_this_path_helper(DllInfo *dll)
     R_registerRoutines(dll, NULL, callRoutines, NULL, externalRoutines);
     R_useDynamicSymbols(dll, FALSE);
     R_forceSymbols(dll, TRUE);
-
-
-    R_RegisterCCallable("this.path.helper", "set_R_Visible"            , (DL_FUNC) &set_R_Visible            );
-    R_RegisterCCallable("this.path.helper", "R_GetUnderlyingConnection", (DL_FUNC) &R_GetUnderlyingConnection);
 }
